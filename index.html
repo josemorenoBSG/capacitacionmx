@@ -48,7 +48,7 @@
         .kpi-value { font-size: 28px; font-weight: 800; color: #111827; margin-top: 6px; }
         .border-orange { border-left: 4px solid #ed704b; }
         .border-purple { border-left: 4px solid #3a2e40; }
-        /* Estilo Ejecutivo del Ranking Tipo Lista */
+        /* Estilo Ranking */
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 24px; }
         @media(min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
         .ranking-title-container { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #f3f4f6; }
@@ -56,13 +56,11 @@
         .ranking-subtitle { font-size: 11px; font-weight: 600; color: #8b5cf6; text-transform: uppercase; letter-spacing: 0.05em; }
         .text-green { color: #16a34a; }
         .text-red { color: #dc2626; }
-        /* Iconos flotantes */
         .corner-badge { position: absolute; top: 20px; right: 24px; font-size: 24px; pointer-events: none; }
         .star-gold { color: #f59e0b; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); }
         .sad-face { font-size: 22px; }
  
         .ranking-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-        /* Tarjetas del Ranking */
         .ranking-item { display: flex; justify-content: space-between; padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 10px; background: #ffffff; font-size: 13px; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s; }
         .ranking-item:hover { transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-color: #d1d5db; }
         .ranking-main-info { display: flex; flex-direction: column; gap: 2px; max-width: 70%; }
@@ -98,148 +96,153 @@
 <body>
  
     <header>
-<div class="header-container">
-<div class="logo-section">
-<div class="logo-badge">BSG</div>
-<h1 class="title">Portal de Capacitación Retail</h1>
-</div>
-<div class="role-selector">
-<button id="btnViewAdmin" class="role-btn" onclick="cambiarVista('admin')">🛠️ Vista Administrador</button>
-<button id="btnViewUser" class="role-btn active" onclick="cambiarVista('user')">👥 Vista Usuario (Consulta)</button>
-</div>
-</div>
-</header>
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-badge">BSG</div>
+                <h1 class="title">Portal de Capacitación Retail</h1>
+            </div>
+            <div class="role-selector">
+                <button id="btnViewAdmin" class="role-btn" onclick="cambiarVista('admin')">🛠️ Vista Admin</button>
+                <button id="btnViewUser" class="role-btn active" onclick="cambiarVista('user')">👥 Vista Usuario (Consulta)</button>
+            </div>
+        </div>
+    </header>
  
     <main>
-<section id="adminUploadSection" class="card upload-zone" style="display: none;">
-<div class="upload-header">
-<h2>Carga de Archivos Corporativos de Aprendizaje</h2>
-<p>Sube tus reportes para calcular la jerarquía multinivel adaptativa del Dashboard corporativo.</p>
-</div>
-<div class="upload-controls">
-<input type="file" id="fileInput" multiple accept=".csv,.txt" onchange="simularCargaYProcesar()" />
-<div id="loadProgressContainer" class="load-progress-container">
-<div id="loadProgressBar" class="load-progress-bar"></div>
-</div>
-<span id="loadStatusText" class="load-status-text"></span>
-</div>
-</section>
+        <section id="adminUploadSection" class="card upload-zone" style="display: none;">
+            <div class="upload-header">
+                <h2>Panel de Control: Sincronización Automática con GitHub</h2>
+                <p>Sube tus archivos locales (<code>cursos.csv</code> y <code>programas.csv</code>). El sistema actualizará el repositorio de manera remota e instantánea.</p>
+            </div>
+            <div class="upload-controls">
+                <input type="file" id="fileInput" multiple accept=".csv" onchange="ejecutarSincronizacionGitHub()" />
+                <div id="loadProgressContainer" class="load-progress-container">
+                    <div id="loadProgressBar" class="load-progress-bar"></div>
+                </div>
+                <span id="loadStatusText" class="load-status-text"></span>
+            </div>
+        </section>
  
         <div id="noDataContainer" class="card no-data-msg hidden"></div>
  
         <div id="dashboardContent" class="hidden" style="display: flex; flex-direction: column; gap: 24px;">
-<section class="dropdown-filters-container">
-<button class="clear-filters-btn" onclick="limpiarTodosLosFiltros()">🧹 Limpiar Filtros</button>
+            <section class="dropdown-filters-container">
+                <button class="clear-filters-btn" onclick="limpiarTodosLosFiltros()">🧹 Limpiar Filtros</button>
 
-<div class="custom-dropdown">
-<label class="dropdown-label">Estructura / Tipo</label>
-<button class="dropdown-btn" id="btnFOrigen" onclick="toggleDropdown(event, 'dropOrigen')">Todos</button>
-<div id="dropOrigen" class="dropdown-content">
-<label class="dropdown-item"><input type="checkbox" value="Curso" onchange="cambioOrigenDropdown()"> Curso Lineal</label>
-<label class="dropdown-item"><input type="checkbox" value="Programa" onchange="cambioOrigenDropdown()"> Programa Integrado</label>
-</div>
-</div>
+                <div class="custom-dropdown">
+                    <label class="dropdown-label">Estructura / Tipo</label>
+                    <button class="dropdown-btn" id="btnFOrigen" onclick="toggleDropdown(event, 'dropOrigen')">Todos</button>
+                    <div id="dropOrigen" class="dropdown-content">
+                        <label class="dropdown-item"><input type="checkbox" value="Curso" onchange="cambioOrigenDropdown()"> Curso Lineal</label>
+                        <label class="dropdown-item"><input type="checkbox" value="Programa" onchange="cambioOrigenDropdown()"> Programa Integrado</label>
+                    </div>
+                </div>
  
                 <div class="custom-dropdown">
-<label class="dropdown-label">Capacitación / Programa</label>
-<button class="dropdown-btn" id="btnFCurso" onclick="toggleDropdown(event, 'dropCurso')">Todos</button>
-<div id="dropCurso" class="dropdown-content"></div>
-</div>
+                    <label class="dropdown-label">Capacitación / Programa</label>
+                    <button class="dropdown-btn" id="btnFCurso" onclick="toggleDropdown(event, 'dropCurso')">Todos</button>
+                    <div id="dropCurso" class="dropdown-content"></div>
+                </div>
  
                 <div class="custom-dropdown">
-<label class="dropdown-label">Región</label>
-<button class="dropdown-btn" id="btnFRegion" onclick="toggleDropdown(event, 'dropRegion')">Todos</button>
-<div id="dropRegion" class="dropdown-content"></div>
-</div>
+                    <label class="dropdown-label">Región</label>
+                    <button class="dropdown-btn" id="btnFRegion" onclick="toggleDropdown(event, 'dropRegion')">Todos</button>
+                    <div id="dropRegion" class="dropdown-content"></div>
+                </div>
  
                 <div class="custom-dropdown">
-<label class="dropdown-label">Distrito</label>
-<button class="dropdown-btn" id="btnFDistrito" onclick="toggleDropdown(event, 'dropDistrito')">Todos</button>
-<div id="dropDistrito" class="dropdown-content"></div>
-</div>
+                    <label class="dropdown-label">Distrito</label>
+                    <button class="dropdown-btn" id="btnFDistrito" onclick="toggleDropdown(event, 'dropDistrito')">Todos</button>
+                    <div id="dropDistrito" class="dropdown-content"></div>
+                </div>
  
                 <div class="custom-dropdown">
-<label class="dropdown-label">Tienda / Sucursal</label>
-<button class="dropdown-btn" id="btnFTienda" onclick="toggleDropdown(event, 'dropTienda')">Todos</button>
-<div id="dropTienda" class="dropdown-content"></div>
-</div>
+                    <label class="dropdown-label">Tienda / Sucursal</label>
+                    <button class="dropdown-btn" id="btnFTienda" onclick="toggleDropdown(event, 'dropTienda')">Todos</button>
+                    <div id="dropTienda" class="dropdown-content"></div>
+                </div>
  
                 <div class="custom-dropdown">
-<label class="dropdown-label">Estatus de Avance</label>
-<button class="dropdown-btn" id="btnFEstatus" onclick="toggleDropdown(event, 'dropEstatus')">Todos</button>
-<div id="dropEstatus" class="dropdown-content">
-<label class="dropdown-item"><input type="checkbox" value="No iniciado" onchange="aplicarFiltrosDropdown()"> No iniciado (0%)</label>
-<label class="dropdown-item"><input type="checkbox" value="En curso" onchange="aplicarFiltrosDropdown()"> En curso (1-99%)</label>
-<label class="dropdown-item"><input type="checkbox" value="Finalizado" onchange="aplicarFiltrosDropdown()"> Finalizado (100%)</label>
-</div>
-</div>
-</section>
+                    <label class="dropdown-label">Estatus de Avance</label>
+                    <button class="dropdown-btn" id="btnFEstatus" onclick="toggleDropdown(event, 'dropEstatus')">Todos</button>
+                    <div id="dropEstatus" class="dropdown-content">
+                        <label class="dropdown-item"><input type="checkbox" value="No iniciado" onchange="aplicarFiltrosDropdown()"> No iniciado (0%)</label>
+                        <label class="dropdown-item"><input type="checkbox" value="En curso" onchange="aplicarFiltrosDropdown()"> En curso (1-99%)</label>
+                        <label class="dropdown-item"><input type="checkbox" value="Finalizado" onchange="aplicarFiltrosDropdown()"> Finalizado (100%)</label>
+                    </div>
+                </div>
+            </section>
  
             <section class="kpi-grid">
-<div class="kpi-card border-purple">
-<p class="kpi-title">Colaboradores Activos</p>
-<p id="kpiPersonas" class="kpi-value">-</p>
-</div>
-<div class="kpi-card border-orange">
-<p class="kpi-title">% Avance General Ponderado</p>
-<p id="kpiPorcentaje" class="kpi-value">-</p>
-</div>
-<div class="kpi-card">
-<p class="kpi-title" style="font-size: 14px; font-weight: 700;">Estatus General</p>
-<div id="kpiEstatusMix" style="font-size: 15px; font-weight: bold; color: #4b5563; margin-top: 10px; line-height: 1.5;">-</div>
-</div>
-</section>
+                <div class="kpi-card border-purple">
+                    <p class="kpi-title">Colaboradores Activos</p>
+                    <p id="kpiPersonas" class="kpi-value">-</p>
+                </div>
+                <div class="kpi-card border-orange">
+                    <p class="kpi-title">% Avance General Ponderado</p>
+                    <p id="kpiPorcentaje" class="kpi-value">-</p>
+                </div>
+                <div class="kpi-card">
+                    <p class="kpi-title" style="font-size: 14px; font-weight: 700;">Estatus General</p>
+                    <div id="kpiEstatusMix" style="font-size: 15px; font-weight: bold; color: #4b5563; margin-top: 10px; line-height: 1.5;">-</div>
+                </div>
+            </section>
  
             <section class="grid-2">
-<div class="card">
-<div class="corner-badge star-gold">★</div>
-<div class="ranking-title-container">
-<span id="lblNivelTopSub" class="ranking-subtitle">Análisis por Región</span>
-<span class="ranking-title text-green">🏆 TOP 3 Desempeño</span>
-</div>
-<ul id="rankingTiendasTop" class="ranking-list"></ul>
-</div>
-<div class="card">
-<div class="corner-badge sad-face">🥺</div>
-<div class="ranking-title-container">
-<span id="lblNivelWorstSub" class="ranking-subtitle">Análisis por Región</span>
-<span class="ranking-title text-red">⚠️ Follow up prioritario</span>
-</div>
-<ul id="rankingTiendasFlop" class="ranking-list"></ul>
-</div>
-</section>
+                <div class="card">
+                    <div class="corner-badge star-gold">★</div>
+                    <div class="ranking-title-container">
+                        <span id="lblNivelTopSub" class="ranking-subtitle">Análisis por Región</span>
+                        <h4 class="ranking-title text-green">🏆 TOP 3 Desempeño</h4>
+                    </div>
+                    <ul id="rankingTiendasTop" class="ranking-list"></ul>
+                </div>
+                <div class="card">
+                    <div class="corner-badge sad-face">🥺</div>
+                    <div class="ranking-title-container">
+                        <span id="lblNivelWorstSub" class="ranking-subtitle">Análisis por Región</span>
+                        <h4 class="ranking-title text-red">⚠️ Follow up prioritario</h4>
+                    </div>
+                    <ul id="rankingTiendasFlop" class="ranking-list"></ul>
+                </div>
+            </section>
  
             <section class="table-section">
-<div class="table-header-box">
-<div style="display: flex; justify-content: space-between; width: 100%; align-items: center; flex-wrap: wrap;">
-<h3 style="color: #3a2e40;">📋 Detalle de Avance por Colaborador</h3>
-<span id="rowCount" style="font-size: 13px; font-weight: 700; color: #3a2e40; background: #f2ebf4; padding: 4px 10px; border-radius: 6px;"></span>
-</div>
-<div id="infoFiltrosAplicados" class="info-top-filters"></div>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Legajo</th>
-<th>Colaborador</th>
-<th>Estructura Geográfica / Tienda</th>
-<th>Elemento de Aprendizaje</th>
-<th class="text-center">Estatus</th>
-<th class="text-right">Porcentaje de Avance</th>
-</tr>
-</thead>
-<tbody id="tablaDetalle"></tbody>
-</table>
-</div>
-</section>
- 
+                <div class="table-header-box">
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; flex-wrap: wrap;">
+                        <h3 style="color: #3a2e40;">📋 Detalle de Avance por Colaborador</h3>
+                        <span id="rowCount" style="font-size: 13px; font-weight: 700; color: #3a2e40; background: #f2ebf4; padding: 4px 10px; border-radius: 6px;"></span>
+                    </div>
+                    <div id="infoFiltrosAplicados" class="info-top-filters"></div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Legajo</th>
+                                <th>Colaborador</th>
+                                <th>Estructura Geográfica / Tienda</th>
+                                <th>Elemento de Aprendizaje</th>
+                                <th class="text-center">Estatus</th>
+                                <th class="text-right">Porcentaje de Avance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaDetalle"></tbody>
+                    </table>
+                </div>
+            </section>
         </div>
-</main>
+    </main>
  
     <script>
+        // === CONFIGURACIÓN GLOBAL DE GITHUB ===
+        const GITHUB_USER = 'josemorenobsg';
+        const GITHUB_REPO = 'capacizacionmx';
+        const GITHUB_BRANCH = 'main'; 
+
         let baseDatosConsolidada = [];
         let vistaActual = 'user'; 
+        let githubToken = ''; // Guardará el Token PAT en memoria durante la sesión
  
         function toggleDropdown(event, id) {
             event.stopPropagation();
@@ -281,40 +284,16 @@
             if (baseDatosConsolidada.length === 0) {
                 if(vistaActual === 'admin') {
                     noData.classList.remove('hidden');
-                    noData.innerHTML = "🚫 No se han cargado datos todavía. Por favor, sube tus archivos para inicializar el panel.";
+                    noData.innerHTML = "🚫 No se han cargado datos todavía. Por favor, selecciona tus archivos CSV abajo para inicializar.";
                 } else {
                     noData.classList.remove('hidden');
-                    noData.innerHTML = "🔒 Cargando reportes corporativos automatizados de forma directa...";
+                    noData.innerHTML = "🔒 Cargando reportes corporativos automatizados desde el servidor...";
                 }
                 content.classList.add('hidden');
             } else {
                 noData.classList.add('hidden');
                 content.classList.remove('hidden');
             }
-        }
- 
-        function simularCargaYProcesar() {
-            const files = document.getElementById('fileInput').files;
-            if (files.length === 0) return;
- 
-            const pBarContainer = document.getElementById('loadProgressContainer');
-            const pBar = document.getElementById('loadProgressBar');
-            const statusText = document.getElementById('loadStatusText');
- 
-            pBarContainer.style.display = 'block';
-            pBar.style.width = '0%';
-            statusText.innerText = 'Inicializando motor dinámico y acoplando jerarquías...';
- 
-            let progreso = 0;
-            let intervalo = setInterval(() => {
-                progreso += 25;
-                if (progreso > 90) {
-                    clearInterval(intervalo);
-                    procesarArchivosLocales(files);
-                } else {
-                    pBar.style.width = progreso + '%';
-                }
-            }, 300);
         }
  
         function parseCSV(text) {
@@ -383,28 +362,100 @@
                 }
             }
         }
+
+        // === NUEVO MOTOR: PROCESAR LOCALMENTE Y SUBIR LOS ARCHIVOS A GITHUB ===
+        async function ejecutarSincronizacionGitHub() {
+            const files = document.getElementById('fileInput').files;
+            if (files.length === 0) return;
+
+            // Solicitar el token PAT de GitHub si no se ha guardado en la sesión
+            if (!githubToken) {
+                githubToken = prompt("🔐 Por seguridad, introduce tu Personal Access Token (PAT) de GitHub con permisos de escritura:");
+                if (!githubToken) {
+                    alert("❌ Operación cancelada. Se requiere token para actualizar GitHub.");
+                    return;
+                }
+            }
+
+            const pBarContainer = document.getElementById('loadProgressContainer');
+            const pBar = document.getElementById('loadProgressBar');
+            const statusText = document.getElementById('loadStatusText');
  
-        function procesarArchivosLocales(files) {
+            pBarContainer.style.display = 'block';
+            pBar.style.width = '10%';
+            statusText.innerText = 'Leyendo archivos locales...';
+
             baseDatosConsolidada = [];
-            let archivosLeidos = 0;
- 
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    procesarFilasCSV(e.target.result, file.name);
-                    archivosLeidos++;
-                    if (archivosLeidos === files.length) {
-                        finalizarCarga();
+            
+            try {
+                for (let file of Array.from(files)) {
+                    if (file.name !== 'cursos.csv' && file.name !== 'programas.csv') {
+                        alert(`⚠️ El archivo "${file.name}" fue ignorado. Solo se permiten archivos llamados exactamente "cursos.csv" o "programas.csv".`);
+                        continue;
                     }
-                };
-                reader.readAsText(file, 'UTF-8');
-            });
+
+                    const text = await file.text();
+                    
+                    // 1. Procesar en el Dashboard actual de inmediato
+                    procesarFilasCSV(text, file.name);
+                    
+                    pBar.style.width = '40%';
+                    statusText.innerText = `Sincronizando archivo remoto "${file.name}" con GitHub...`;
+
+                    // 2. Obtener el SHA del archivo viejo de GitHub si existe (Requisito de su API para sobreescribir)
+                    let sha = '';
+                    const fileUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${file.name}?ref=${GITHUB_BRANCH}`;
+                    
+                    const checkRes = await fetch(fileUrl, {
+                        headers: { 'Authorization': `token ${githubToken}` }
+                    });
+                    if (checkRes.ok) {
+                        const fileData = await checkRes.json();
+                        sha = fileData.sha;
+                    }
+
+                    // 3. Hacer el push (PUT) a la API de contenidos de GitHub
+                    const putPayload = {
+                        message: `Actualización automatizada de reporte corporativo: ${file.name}`,
+                        content: btoa(unescape(encodeURIComponent(text))), // Convierte el texto plano a Base64 respetando acentos
+                        branch: GITHUB_BRANCH
+                    };
+                    if (sha) putPayload.sha = sha;
+
+                    const uploadRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${file.name}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${githubToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(putPayload)
+                    });
+
+                    if (!uploadRes.ok) {
+                        throw new Error(`Error en GitHub al intentar subir ${file.name}`);
+                    }
+                }
+
+                pBar.style.width = '100%';
+                statusText.innerText = '✅ ¡Sincronización exitosa! Los archivos ya están en la raíz de tu GitHub.';
+                
+                setTimeout(() => {
+                    evaluarEstadoDashboard();
+                    construirFiltrosDropdownBase();
+                    aplicarFiltrosDropdown();
+                }, 500);
+
+            } catch (error) {
+                console.error(error);
+                pBar.style.width = '0%';
+                statusText.innerText = '❌ Error de sincronización.';
+                alert(`Error al empujar cambios a GitHub: ${error.message}. Verifica que tu Token sea válido y tenga permisos.`);
+            }
         }
  
-        // CARGA DIRECTA DE ARCHIVOS POR RUTA RELATIVA (Inmune a fallos de API)
+        // CARGA INICIAL (Al entrar como consulta)
         async function cargarDesdeGitHub() {
             const archivosACargar = ['cursos.csv', 'programas.csv'];
-            
             try {
                 baseDatosConsolidada = [];
                 let cargoAlMenosUno = false;
@@ -415,26 +466,17 @@
                         const csvText = await response.text();
                         procesarFilasCSV(csvText, nombreArchivo);
                         cargoAlMenosUno = true;
-                        console.log(`✓ Archivo procesado correctamente: ${nombreArchivo}`);
-                    } else {
-                        console.warn(`! No se localizó el archivo: ${nombreArchivo}`);
                     }
                 }
- 
                 if (cargoAlMenosUno) {
                     finalizarCarga();
                 }
- 
             } catch (error) {
-                console.error("Error en la carga estática directa:", error);
+                console.error("Error en la carga estática inicial:", error);
             }
         }
  
         function finalizarCarga() {
-            if(document.getElementById('loadProgressBar')) {
-                document.getElementById('loadProgressBar').style.width = '100%';
-                document.getElementById('loadStatusText').innerText = '✅ Datos listos.';
-            }
             setTimeout(() => {
                 evaluarEstadoDashboard();
                 construirFiltrosDropdownBase();
@@ -498,9 +540,9 @@
             valores.forEach(v => {
                 if (v) {
                     div.innerHTML += `
-<label class="dropdown-item">
-<input type="checkbox" value="${v}" onchange="${onChangeFunc}"> ${v}
-</label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" value="${v}" onchange="${onChangeFunc}"> ${v}
+                        </label>
                     `;
                 }
             });
@@ -580,19 +622,19 @@
                 datos.slice(0, 400).forEach(x => {
                     let badgeClass = x.estatus === 'Finalizado' ? 'badge-verde' : x.estatus === 'En curso' ? 'badge-amarillo' : 'badge-rojo';
                     tbody.innerHTML += `
-<tr>
-<td class="font-mono">${x.legajo}</td>
-<td style="font-weight:600; color:#111827;">${x.nombre}</td>
-<td style="font-size:12px;">${limpiarTextoGeografico(x.region)} • ${limpiarTextoGeografico(x.distrito)}<br><span style="color:#3a2e40; font-weight:700;">${limpiarTextoGeografico(x.tienda)}</span></td>
-<td><span style="font-size:10px; font-weight:bold; color:#7c3aed; background:#f5f3ff; padding:2px 6px; border-radius:4px; margin-right:4px;">${x.origen.toUpperCase()}</span> ${x.curso}</td>
-<td class="text-center"><span class="badge ${badgeClass}">${x.estatus}</span></td>
-<td class="text-right" style="font-weight:700; color:#111827;">
-<div class="progress-bar-container">
-<div class="progress-bar-fill" style="width: ${x.progreso}%"></div>
-</div>
+                        <tr>
+                            <td class="font-mono">${x.legajo}</td>
+                            <td style="font-weight:600; color:#111827;">${x.nombre}</td>
+                            <td style="font-size:12px;">${limpiarTextoGeografico(x.region)} • ${limpiarTextoGeografico(x.distrito)}<br><span style="color:#3a2e40; font-weight:700;">${limpiarTextoGeografico(x.tienda)}</span></td>
+                            <td><span style="font-size:10px; font-weight:bold; color:#7c3aed; background:#f5f3ff; padding:2px 6px; border-radius:4px; margin-right:4px;">${x.origen.toUpperCase()}</span> ${x.curso}</td>
+                            <td class="text-center"><span class="badge ${badgeClass}">${x.estatus}</span></td>
+                            <td class="text-right" style="font-weight:700; color:#111827;">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: ${x.progreso}%"></div>
+                                </div>
                                 ${x.progreso}%
-</td>
-</tr>
+                            </td>
+                        </tr>
                     `;
                 });
             }
@@ -652,23 +694,23 @@
             }
  
             listTop.innerHTML = top3.map((item, idx) => `
-<li class="ranking-item">
-<div class="ranking-main-info">
-<span class="ranking-item-name">${idx + 1}. ${item.nombreVisible}</span>
-<span class="ranking-item-sub">${item.contexto} • ${item.totalAsig} asignaciones</span>
-</div>
-<div class="ranking-badge-value bg-green-light">${item.promedio.toFixed(1)}%</div>
-</li>
+                <li class="ranking-item">
+                    <div class="ranking-main-info">
+                        <span class="ranking-item-name">${idx + 1}. ${item.nombreVisible}</span>
+                        <span class="ranking-item-sub">${item.contexto} • ${item.totalAsig} asignaciones</span>
+                    </div>
+                    <div class="ranking-badge-value bg-green-light">${item.promedio.toFixed(1)}%</div>
+                </li>
             `).join('');
  
             listFlop.innerHTML = worst3.map((item) => `
-<li class="ranking-item">
-<div class="ranking-main-info">
-<span class="ranking-item-name">⚠️ ${item.nombreVisible}</span>
-<span class="ranking-item-sub">${item.contexto} • ${item.totalAsig} asignaciones</span>
-</div>
-<div class="ranking-badge-value bg-red-light">${item.promedio.toFixed(1)}%</div>
-</li>
+                <li class="ranking-item">
+                    <div class="ranking-main-info">
+                        <span class="ranking-item-name">⚠️ ${item.nombreVisible}</span>
+                        <span class="ranking-item-sub">${item.contexto} • ${item.totalAsig} asignaciones</span>
+                    </div>
+                    <div class="ranking-badge-value bg-red-light">${item.promedio.toFixed(1)}%</div>
+                </li>
             `).join('');
         }
 
