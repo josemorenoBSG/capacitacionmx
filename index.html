@@ -21,8 +21,11 @@
         .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); position: relative; }
         .upload-zone { border-top: 4px solid #3a2e40; display: flex; flex-direction: column; gap: 16px; }
         .upload-header h2 { font-size: 16px; font-weight: 700; color: #111827; }
-        .upload-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
-        .load-progress-container { width: 100%; max-width: 400px; background: #e5e7eb; height: 12px; border-radius: 9999px; overflow: hidden; display: none; }
+        .upload-controls { display: flex; flex-direction: column; gap: 15px; background: #f9fafb; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .token-input-group { display: flex; flex-direction: column; gap: 5px; width: 100%; max-width: 500px; }
+        .token-input-group label { font-size: 12px; font-weight: 700; color: #4b5563; }
+        .token-field { padding: 8px 12px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; font-family: monospace; }
+        .load-progress-container { width: 100%; max-width: 500px; background: #e5e7eb; height: 12px; border-radius: 9999px; overflow: hidden; display: none; margin-top: 10px; }
         .load-progress-bar { background: linear-gradient(90deg, #ed704b, #3a2e40); width: 0%; height: 100%; transition: width 0.1s ease; }
         /* CONTENEDOR DE FILTROS DESPLEGABLES */
         .dropdown-filters-container { display: flex; flex-wrap: wrap; gap: 12px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); align-items: flex-end; }
@@ -57,7 +60,7 @@
         .text-green { color: #16a34a; }
         .text-red { color: #dc2626; }
         .corner-badge { position: absolute; top: 20px; right: 24px; font-size: 24px; pointer-events: none; }
-        .star-gold { color: #f59e0b; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); }
+        .star-gold { color: #f59b0b; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); }
         .sad-face { font-size: 22px; }
  
         .ranking-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
@@ -85,7 +88,7 @@
         .badge-rojo { background: #fee2e2; color: #b91c1c; }
         .progress-bar-container { background: #e5e7eb; border-radius: 4px; width: 60px; height: 8px; display: inline-block; margin-right: 8px; overflow: hidden; vertical-align: middle; }
         .progress-bar-fill { background: #ed704b; height: 100%; border-radius: 4px; }
-        .info-top-filters { font-size: 12px; background: #f4eff5; color: #503e56; padding: 6px 12px; border-radius: 6px; font-weight: 500; border: 1px solid #e1d5e4; width: 100%; margin-top: 4px; }
+        .info-top-filters { font-size: 12px; background: #f4eff5; color: #503e56; padding: 6px 12px; border-radius: 6px; font-weight: 500; border: 1px solid #e1d4e4; width: 100%; margin-top: 4px; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .font-mono { font-family: monospace; font-weight: bold; color: #6b7280; }
@@ -111,15 +114,22 @@
     <main>
         <section id="adminUploadSection" class="card upload-zone" style="display: none;">
             <div class="upload-header">
-                <h2>Panel de Control: Sincronización Automática con GitHub</h2>
-                <p>Sube tus archivos locales (<code>cursos.csv</code> y <code>programas.csv</code>). El sistema actualizará el repositorio de manera remota e instantánea.</p>
+                <h2>Panel de Control: Sincronización Remota Remota (GitHub)</h2>
+                <p>Ingresa tu Token de GitHub, selecciona tus archivos y el sistema modificará de inmediato tu repositorio.</p>
             </div>
             <div class="upload-controls">
-                <input type="file" id="fileInput" multiple accept=".csv" onchange="ejecutarSincronizacionGitHub()" />
+                <div class="token-input-group">
+                    <label for="tokenField">🔑 Personal Access Token (PAT) de GitHub:</label>
+                    <input type="password" id="tokenField" class="token-field" placeholder="Pega aquí tu token ghp_..." onchange="guardarTokenLocal(this.value)" />
+                </div>
+                <div style="margin-top: 10px;">
+                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Seleccionar Archivos Corporativos:</label>
+                    <input type="file" id="fileInput" multiple accept=".csv" onchange="ejecutarSincronizacionGitHub()" />
+                </div>
                 <div id="loadProgressContainer" class="load-progress-container">
                     <div id="loadProgressBar" class="load-progress-bar"></div>
                 </div>
-                <span id="loadStatusText" class="load-status-text"></span>
+                <span id="loadStatusText" style="font-size: 13px; font-weight: 600; display: block; margin-top: 5px;"></span>
             </div>
         </section>
  
@@ -242,7 +252,7 @@
 
         let baseDatosConsolidada = [];
         let vistaActual = 'user'; 
-        let githubToken = ''; // Guardará el Token PAT en memoria durante la sesión
+        let githubToken = localStorage.getItem('bsg_github_token') || ''; 
  
         function toggleDropdown(event, id) {
             event.stopPropagation();
@@ -261,6 +271,11 @@
                 cerrarTodosLosDropdowns();
             }
         }
+
+        function guardarTokenLocal(valor) {
+            githubToken = valor.trim();
+            localStorage.setItem('bsg_github_token', githubToken);
+        }
  
         function cambiarVista(rol) {
             if (rol === 'admin') {
@@ -269,6 +284,12 @@
                     alert("❌ Contraseña incorrecta. Acceso denegado.");
                     return; 
                 }
+                // Rellenar visualmente el campo si ya existía en localStorage
+                setTimeout(() => {
+                    if (document.getElementById('tokenField')) {
+                        document.getElementById('tokenField').value = githubToken;
+                    }
+                }, 50);
             }
             
             vistaActual = rol;
@@ -284,7 +305,7 @@
             if (baseDatosConsolidada.length === 0) {
                 if(vistaActual === 'admin') {
                     noData.classList.remove('hidden');
-                    noData.innerHTML = "🚫 No se han cargado datos todavía. Por favor, selecciona tus archivos CSV abajo para inicializar.";
+                    noData.innerHTML = "🚫 No se han cargado datos todavía. Ingresa tu token y selecciona tus archivos CSV abajo.";
                 } else {
                     noData.classList.remove('hidden');
                     noData.innerHTML = "🔒 Cargando reportes corporativos automatizados desde el servidor...";
@@ -363,18 +384,14 @@
             }
         }
 
-        // === NUEVO MOTOR: PROCESAR LOCALMENTE Y SUBIR LOS ARCHIVOS A GITHUB ===
+        // === CONTROLADOR DE SUBIDA AUTOMÁTICA DIRECTA ===
         async function ejecutarSincronizacionGitHub() {
             const files = document.getElementById('fileInput').files;
             if (files.length === 0) return;
 
-            // Solicitar el token PAT de GitHub si no se ha guardado en la sesión
             if (!githubToken) {
-                githubToken = prompt("🔐 Por seguridad, introduce tu Personal Access Token (PAT) de GitHub con permisos de escritura:");
-                if (!githubToken) {
-                    alert("❌ Operación cancelada. Se requiere token para actualizar GitHub.");
-                    return;
-                }
+                alert("❌ Por favor, escribe primero tu Personal Access Token (PAT) de GitHub en el cuadro de texto.");
+                return;
             }
 
             const pBarContainer = document.getElementById('loadProgressContainer');
@@ -383,28 +400,34 @@
  
             pBarContainer.style.display = 'block';
             pBar.style.width = '10%';
-            statusText.innerText = 'Leyendo archivos locales...';
+            statusText.innerText = 'Validando nombres de archivos...';
 
             baseDatosConsolidada = [];
+            let archivosSubidosCorrectamente = 0;
             
             try {
                 for (let file of Array.from(files)) {
-                    if (file.name !== 'cursos.csv' && file.name !== 'programas.csv') {
-                        alert(`⚠️ El archivo "${file.name}" fue ignorado. Solo se permiten archivos llamados exactamente "cursos.csv" o "programas.csv".`);
+                    // Forzar limpieza del nombre por si el sistema operativo le agrega marcas temporales
+                    let nombreLimpio = file.name.toLowerCase().trim();
+                    let esCursos = nombreLimpio.includes('curso');
+                    let esProgramas = nombreLimpio.includes('programa');
+
+                    if (!esCursos && !esProgramas) {
+                        alert(`⚠️ El archivo "${file.name}" no fue procesado. Renómbralo para que contenga la palabra "cursos" o "programas".`);
                         continue;
                     }
 
+                    let destinoFinal = esCursos ? 'cursos.csv' : 'programas.csv';
                     const text = await file.text();
                     
-                    // 1. Procesar en el Dashboard actual de inmediato
-                    procesarFilasCSV(text, file.name);
+                    procesarFilasCSV(text, destinoFinal);
                     
                     pBar.style.width = '40%';
-                    statusText.innerText = `Sincronizando archivo remoto "${file.name}" con GitHub...`;
+                    statusText.innerText = `Subiendo de forma remota "${destinoFinal}" a GitHub...`;
 
-                    // 2. Obtener el SHA del archivo viejo de GitHub si existe (Requisito de su API para sobreescribir)
+                    // Obtener SHA actual de la API para habilitar sobreescritura
                     let sha = '';
-                    const fileUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${file.name}?ref=${GITHUB_BRANCH}`;
+                    const fileUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${destinoFinal}?ref=${GITHUB_BRANCH}`;
                     
                     const checkRes = await fetch(fileUrl, {
                         headers: { 'Authorization': `token ${githubToken}` }
@@ -414,15 +437,15 @@
                         sha = fileData.sha;
                     }
 
-                    // 3. Hacer el push (PUT) a la API de contenidos de GitHub
+                    // Enviar binario convertido a Base64 respetando caracteres UTF-8
                     const putPayload = {
-                        message: `Actualización automatizada de reporte corporativo: ${file.name}`,
-                        content: btoa(unescape(encodeURIComponent(text))), // Convierte el texto plano a Base64 respetando acentos
+                        message: `Actualización automatizada de reporte corporativo: ${destinoFinal}`,
+                        content: btoa(unescape(encodeURIComponent(text))),
                         branch: GITHUB_BRANCH
                     };
                     if (sha) putPayload.sha = sha;
 
-                    const uploadRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${file.name}`, {
+                    const uploadRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${destinoFinal}`, {
                         method: 'PUT',
                         headers: {
                             'Authorization': `token ${githubToken}`,
@@ -431,29 +454,33 @@
                         body: JSON.stringify(putPayload)
                     });
 
-                    if (!uploadRes.ok) {
-                        throw new Error(`Error en GitHub al intentar subir ${file.name}`);
+                    if (uploadRes.ok) {
+                        archivosSubidosCorrectamente++;
+                    } else {
+                        throw new Error(`Error en los permisos del Token para el archivo ${destinoFinal}`);
                     }
                 }
 
-                pBar.style.width = '100%';
-                statusText.innerText = '✅ ¡Sincronización exitosa! Los archivos ya están en la raíz de tu GitHub.';
-                
-                setTimeout(() => {
-                    evaluarEstadoDashboard();
-                    construirFiltrosDropdownBase();
-                    aplicarFiltrosDropdown();
-                }, 500);
+                if(archivosSubidosCorrectamente > 0) {
+                    pBar.style.width = '100%';
+                    statusText.innerText = `✅ ¡Éxito! Se actualizaron los reportes en GitHub de manera remota.`;
+                    
+                    setTimeout(() => {
+                        evaluarEstadoDashboard();
+                        construirFiltrosDropdownBase();
+                        aplicarFiltrosDropdown();
+                    }, 600);
+                }
 
             } catch (error) {
                 console.error(error);
                 pBar.style.width = '0%';
                 statusText.innerText = '❌ Error de sincronización.';
-                alert(`Error al empujar cambios a GitHub: ${error.message}. Verifica que tu Token sea válido y tenga permisos.`);
+                alert(`Error crítico al conectar con GitHub: ${error.message}. Revisa que tu token clásico de GitHub no haya expirado y posea permisos de "repo".`);
             }
         }
  
-        // CARGA INICIAL (Al entrar como consulta)
+        // CARGA COMPONENTE DE CONSULTA
         async function cargarDesdeGitHub() {
             const archivosACargar = ['cursos.csv', 'programas.csv'];
             try {
@@ -569,7 +596,7 @@
  
         function limpiarTextoGeografico(texto) {
             if (!texto) return '';
-            return texto.replace(/,?\s*\bmexico\b/gi, '')
+            return text = texto.replace(/,?\s*\bmexico\b/gi, '')
                         .replace(/_?MX_?/gi, '')
                         .trim();
         }
