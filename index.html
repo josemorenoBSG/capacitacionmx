@@ -416,28 +416,42 @@
         }
 
         // === NUEVA FUNCIÓN: CARGAR AUTOMÁTICAMENTE DE GITHUB ===
-        async function cargarDesdeGitHub() {
-            if (GITHUB_USER === 'TU_USUARIO_GITHUB' || GITHUB_REPO === 'TU_REPOSITORIO_GITHUB') {
-                console.log("GitHub no configurado. Esperando carga manual.");
-                return;
+       async function cargarDesdeGitHub() {
+    if (GITHUB_USER === 'TU_USUARIO_GITHUB' || GITHUB_REPO === 'TU_REPOSITORIO_GITHUB') {
+        console.error("Configuración de GitHub no válida.");
+        return;
+    }
+
+    const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/?ref=${GITHUB_BRANCH}`;
+    
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`Error ${response.status}: No se pudo conectar a GitHub.`);
+        
+        const archivos = await response.json();
+        const archivosCSV = archivos.filter(file => file.type === 'file' && file.name.toLowerCase().endsWith('.csv'));
+        
+        if (archivosCSV.length === 0) {
+            alert("No se encontraron archivos CSV en la raíz de tu repositorio.");
+            return;
+        }
+
+        baseDatosConsolidada = [];
+
+        for (let file of archivosCSV) {
+            const csvResponse = await fetch(file.download_url);
+            if (csvResponse.ok) {
+                const csvText = await csvResponse.text();
+                procesarFilasCSV(csvText);
             }
+        }
 
-            const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/?ref=${GITHUB_BRANCH}`;
-            
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error("No se pudo obtener la lista de archivos de GitHub.");
-                
-                const archivos = await response.json();
-                // Filtrar solo los elementos que sean archivos y terminen en .csv
-                const archivosCSV = archivos.filter(file => file.type === 'file' && file.name.toLowerCase().endsWith('.csv'));
-                
-                if (archivosCSV.length === 0) {
-                    console.log("No se encontraron archivos CSV en la raíz del repositorio.");
-                    return;
-                }
-
-                baseDatosConsolidada = [];
+        finalizarCarga();
+    } catch (error) {
+        console.error("Error al cargar desde GitHub:", error);
+        alert("Error al cargar datos desde GitHub: " + error.message + ". Revisa la consola (F12).");
+    }
+}
 
                 // Descargar y procesar cada CSV encontrado
                 for (let file of archivosCSV) {
