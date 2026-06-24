@@ -21,11 +21,8 @@
         .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); position: relative; }
         .upload-zone { border-top: 4px solid #3a2e40; display: flex; flex-direction: column; gap: 16px; }
         .upload-header h2 { font-size: 16px; font-weight: 700; color: #111827; }
-        .upload-controls { display: flex; flex-direction: column; gap: 15px; background: #f9fafb; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; }
-        .token-input-group { display: flex; flex-direction: column; gap: 5px; width: 100%; max-width: 500px; }
-        .token-input-group label { font-size: 12px; font-weight: 700; color: #4b5563; }
-        .token-field { padding: 8px 12px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; font-family: monospace; }
-        .load-progress-container { width: 100%; max-width: 500px; background: #e5e7eb; height: 12px; border-radius: 9999px; overflow: hidden; display: none; margin-top: 10px; }
+        .upload-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+        .load-progress-container { width: 100%; max-width: 400px; background: #e5e7eb; height: 12px; border-radius: 9999px; overflow: hidden; display: none; }
         .load-progress-bar { background: linear-gradient(90deg, #ed704b, #3a2e40); width: 0%; height: 100%; transition: width 0.1s ease; }
         /* CONTENEDOR DE FILTROS DESPLEGABLES */
         .dropdown-filters-container { display: flex; flex-wrap: wrap; gap: 12px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); align-items: flex-end; }
@@ -51,7 +48,8 @@
         .kpi-value { font-size: 28px; font-weight: 800; color: #111827; margin-top: 6px; }
         .border-orange { border-left: 4px solid #ed704b; }
         .border-purple { border-left: 4px solid #3a2e40; }
-        /* Estilo Ranking */
+        
+        /* Estilo Ejecutivo de Rankings */
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 24px; }
         @media(min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
         .ranking-title-container { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #f3f4f6; }
@@ -60,7 +58,7 @@
         .text-green { color: #16a34a; }
         .text-red { color: #dc2626; }
         .corner-badge { position: absolute; top: 20px; right: 24px; font-size: 24px; pointer-events: none; }
-        .star-gold { color: #f59b0b; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); }
+        .star-gold { color: #f59e0b; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); }
         .sad-face { font-size: 22px; }
  
         .ranking-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
@@ -88,7 +86,7 @@
         .badge-rojo { background: #fee2e2; color: #b91c1c; }
         .progress-bar-container { background: #e5e7eb; border-radius: 4px; width: 60px; height: 8px; display: inline-block; margin-right: 8px; overflow: hidden; vertical-align: middle; }
         .progress-bar-fill { background: #ed704b; height: 100%; border-radius: 4px; }
-        .info-top-filters { font-size: 12px; background: #f4eff5; color: #503e56; padding: 6px 12px; border-radius: 6px; font-weight: 500; border: 1px solid #e1d4e4; width: 100%; margin-top: 4px; }
+        .info-top-filters { font-size: 12px; background: #f4eff5; color: #503e56; padding: 6px 12px; border-radius: 6px; font-weight: 500; border: 1px solid #e1d5e4; width: 100%; margin-top: 4px; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .font-mono { font-family: monospace; font-weight: bold; color: #6b7280; }
@@ -105,7 +103,7 @@
                 <h1 class="title">Portal de Capacitación Retail</h1>
             </div>
             <div class="role-selector">
-                <button id="btnViewAdmin" class="role-btn" onclick="cambiarVista('admin')">🛠️ Vista Admin</button>
+                <button id="btnViewAdmin" class="role-btn" onclick="cambiarVista('admin')">🛠️ Vista Administrador</button>
                 <button id="btnViewUser" class="role-btn active" onclick="cambiarVista('user')">👥 Vista Usuario (Consulta)</button>
             </div>
         </div>
@@ -114,22 +112,15 @@
     <main>
         <section id="adminUploadSection" class="card upload-zone" style="display: none;">
             <div class="upload-header">
-                <h2>Panel de Control: Sincronización Remota Remota (GitHub)</h2>
-                <p>Ingresa tu Token de GitHub, selecciona tus archivos y el sistema modificará de inmediato tu repositorio.</p>
+                <h2>Carga de Reportes Locales</h2>
+                <p>Sube tus archivos para previsualizar cambios en tiempo real antes de subirlos a producción.</p>
             </div>
             <div class="upload-controls">
-                <div class="token-input-group">
-                    <label for="tokenField">🔑 Personal Access Token (PAT) de GitHub:</label>
-                    <input type="password" id="tokenField" class="token-field" placeholder="Pega aquí tu token ghp_..." onchange="guardarTokenLocal(this.value)" />
-                </div>
-                <div style="margin-top: 10px;">
-                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Seleccionar Archivos Corporativos:</label>
-                    <input type="file" id="fileInput" multiple accept=".csv" onchange="ejecutarSincronizacionGitHub()" />
-                </div>
+                <input type="file" id="fileInput" multiple accept=".csv,.txt" onchange="simularCargaYProcesar()" />
                 <div id="loadProgressContainer" class="load-progress-container">
                     <div id="loadProgressBar" class="load-progress-bar"></div>
                 </div>
-                <span id="loadStatusText" style="font-size: 13px; font-weight: 600; display: block; margin-top: 5px;"></span>
+                <span id="loadStatusText" class="load-status-text"></span>
             </div>
         </section>
  
@@ -245,14 +236,27 @@
     </main>
  
     <script>
-        // === CONFIGURACIÓN GLOBAL DE GITHUB ===
-        const GITHUB_USER = 'josemorenobsg';
-        const GITHUB_REPO = 'capacizacionmx';
-        const GITHUB_BRANCH = 'main'; 
+        // LISTAS MAESTRAS DE FILTRADO PERMITIDO
+        const CURSOS_PERMITIDOS = [
+            "ONBOARDING TIENDAS", "👋ONBOARDING - #Certificación", "CX | MODELO SSS", "PROCESO VICO",
+            "INTRODUCCIÓN AL VISUAL MERCHANDISING", "POLÍTICA DE CAMBIOS", "PROGRAMAS DE LEALTAD (ISACLUB & FRIENDSCLUB)",
+            "VISUAL MERCHANDISING PRO | TODOMODA", "VISUAL MERCHANDISING PRO | ISADORA", "KPI Y GESTIÓN COMERCIAL | TIENDAS (próximamente)",
+            "TÉCNICAS DE VENTA", "CX EXPERT 💜", "🚀ONBOARDING -Train the trainers", "ATENCIÓN INSPECCIONES MX",
+            "ENVIOS UBER TIENDA GESTIONA MX", "LINEAMIENTOS VISUAL MERCHANDISING (TODOMODA)", "ESENCIALES VM MOD1", "ESENCIALES VM MOD2",
+            "GESTIÓN PEDIDOS ECOMMERCE", "MI NÓMINA", "CX | NPS", "TIPOS DE REPOSICIÓN", "LANZAMIENTO T1 B3 2026 HN| TODOMODA",
+            "LANZAMIENTO T1 B3 HN 2026 |  ISADORA", "CONECTA Y LIDERA | Módulo 1: Me gestiono yo", 
+            "CONECTA Y LIDERA | Módulo 2: Gestiono a mi equipo", "CONECTA Y LIDERA | Módulo 3: Logramos resultados sobresalientes", "CONSUMAN MX"
+        ];
+
+        const PROGRAMAS_PERMITIDOS = [
+            "BE VISUAL: Programa de desarollo", "CONECTA Y LIDERA: programa de liderazgo", "CX EXPERT 💜",
+            "Exclusivo CH | RECORRIDO DE APRENDIZAJE", "INTRODUCCIÓN A LA INTELIGENCIA ARTIFICIAL (INICIAL)",
+            "MI RECORRIDO DE APRENDIZAJE 🚀 (Tiendas)", "ONBOARDING TIENDAS", "TRAIN THE TRAINERS: ONBOARDING",
+            "VM ACADEMY | BIMARCA (TM & ISA)", "VM ACADEMY | ISADORA", "VM ACADEMY | TODOMODA"
+        ];
 
         let baseDatosConsolidada = [];
         let vistaActual = 'user'; 
-        let githubToken = localStorage.getItem('bsg_github_token') || ''; 
  
         function toggleDropdown(event, id) {
             event.stopPropagation();
@@ -271,11 +275,6 @@
                 cerrarTodosLosDropdowns();
             }
         }
-
-        function guardarTokenLocal(valor) {
-            githubToken = valor.trim();
-            localStorage.setItem('bsg_github_token', githubToken);
-        }
  
         function cambiarVista(rol) {
             if (rol === 'admin') {
@@ -284,12 +283,6 @@
                     alert("❌ Contraseña incorrecta. Acceso denegado.");
                     return; 
                 }
-                // Rellenar visualmente el campo si ya existía en localStorage
-                setTimeout(() => {
-                    if (document.getElementById('tokenField')) {
-                        document.getElementById('tokenField').value = githubToken;
-                    }
-                }, 50);
             }
             
             vistaActual = rol;
@@ -303,18 +296,41 @@
             const noData = document.getElementById('noDataContainer');
             const content = document.getElementById('dashboardContent');
             if (baseDatosConsolidada.length === 0) {
+                noData.classList.remove('hidden');
                 if(vistaActual === 'admin') {
-                    noData.classList.remove('hidden');
-                    noData.innerHTML = "🚫 No se han cargado datos todavía. Ingresa tu token y selecciona tus archivos CSV abajo.";
+                    noData.innerHTML = "🚫 No se han cargado datos todavía. Por favor, sube tus archivos locales para inicializar el panel.";
                 } else {
-                    noData.classList.remove('hidden');
-                    noData.innerHTML = "🔒 Cargando reportes corporativos automatizados desde el servidor...";
+                    noData.innerHTML = "🔒 Cargando reportes automatizados de forma directa desde el servidor...";
                 }
                 content.classList.add('hidden');
             } else {
                 noData.classList.add('hidden');
                 content.classList.remove('hidden');
             }
+        }
+ 
+        function simularCargaYProcesar() {
+            const files = document.getElementById('fileInput').files;
+            if (files.length === 0) return;
+ 
+            const pBarContainer = document.getElementById('loadProgressContainer');
+            const pBar = document.getElementById('loadProgressBar');
+            const statusText = document.getElementById('loadStatusText');
+ 
+            pBarContainer.style.display = 'block';
+            pBar.style.width = '0%';
+            statusText.innerText = 'Procesando datos en memoria local...';
+ 
+            let progreso = 0;
+            let intervalo = setInterval(() => {
+                progreso += 25;
+                if (progreso > 90) {
+                    clearInterval(intervalo);
+                    procesarArchivosReales(files);
+                } else {
+                    pBar.style.width = progreso + '%';
+                }
+            }, 300);
         }
  
         function parseCSV(text) {
@@ -335,7 +351,7 @@
             return lines;
         }
  
-        function procesarFilasCSV(text, nombreArchivo = '') {
+        function procesarFilasEstaticas(text, nombreArchivo = '') {
             const rows = parseCSV(text);
             if (rows.length < 2) return;
  
@@ -343,7 +359,7 @@
             let origenDefecto = 'Curso';
             if (nombreArchivo.toLowerCase().includes('programa')) {
                 origenDefecto = 'Programa';
-            } else if (headers.includes('program name') || headers.includes('progreso programa (%)')) {
+            } else if (headers.includes('program name') || headers.includes('progreso programa (%)') || headers.includes('nombre del programa')) {
                 origenDefecto = 'Programa';
             }
  
@@ -359,129 +375,59 @@
                     return '';
                 };
  
-                let legajo = getVal(['Legajo', 'legajo', 'id', 'user id']).replace(/\.0$/, '');
-                let nombre = getVal(['Nombre', "User's Fullname", 'colaborador', 'name']);
-                let region = getVal(['Región', 'Region', 'zona']);
-                let distrito = getVal(['Distrito', 'distrito']);
-                let tienda = getVal(['Tienda', 'Unidad de negocio (Label)', 'sucursal', 'unidad']);
+                let legajo = getVal(['Legajo', 'legajo', 'id', 'user id', 'num empleado', 'empleado']).replace(/\.0$/, '');
+                let nombre = getVal(['Nombre', "User's Fullname", 'colaborador', 'name', 'nombre completo']);
+                let region = getVal(['Región', 'Region', 'zona', 'region geográfica']);
+                let distrito = getVal(['Distrito', 'distrito', 'zona comercial']);
+                let tienda = getVal(['Tienda', 'Unidad de negocio (Label)', 'sucursal', 'unidad', 'tienda / sucursal']);
  
                 if (!legajo && !nombre) continue;
  
-                let cursoName = getVal(['Course Name', 'Nombre del Curso', 'Program Name', 'curso', 'programa', 'elemento']);
-                let progTxt = getVal(['Progreso', 'Progreso Programa (%)', 'count of progress', 'avance', '%']);
-                let est = getVal(['Estatus del Curso', 'program status', 'course status', 'estatus', 'estado']);
+                let cursoName = getVal(['Course Name', 'Nombre del Curso', 'Program Name', 'Nombre del Programa', 'curso', 'programa', 'elemento']);
+                let progTxt = getVal(['Progreso', 'Progreso Programa (%)', 'count of progress', 'avance', '%', 'porcentaje']);
+                let est = getVal(['Estatus del Curso', 'program status', 'course status', 'estatus', 'estado', 'estatus del programa']);
                 
-                let porcentaje = parsearPorcentajeBilingue(progTxt, est);
- 
-                if (cursoName) {
+                // VALIDACIÓN CRUZADA DINÁMICA CON LAS LISTAS MAESTRAS SOLICITADAS
+                let cursoNormalizado = cursoName.trim();
+                let esCursoValido = (origenDefecto === 'Curso' && CURSOS_PERMITIDOS.includes(cursoNormalizado));
+                let esProgramaValido = (origenDefecto === 'Programa' && PROGRAMAS_PERMITIDOS.includes(cursoNormalizado));
+
+                if (cursoName && (esCursoValido || esProgramaValido)) {
+                    let porcentaje = parsearPorcentajeBilingue(progTxt, est);
                     baseDatosConsolidada.push({
                         legajo: legajo, nombre: nombre || 'Colaborador',
                         region: region || 'Sin Región', distrito: distrito || 'Sin Distrito',
-                        tienda: tienda || 'Sin Tienda', curso: cursoName,
+                        tienda: tienda || 'Sin Tienda', curso: cursoNormalizado,
                         estatus: determinarEstatusPorPorcentaje(porcentaje), progreso: porcentaje, origen: origenDefecto
                     });
                 }
             }
         }
 
-        // === CONTROLADOR DE SUBIDA AUTOMÁTICA DIRECTA ===
-        async function ejecutarSincronizacionGitHub() {
-            const files = document.getElementById('fileInput').files;
-            if (files.length === 0) return;
-
-            if (!githubToken) {
-                alert("❌ Por favor, escribe primero tu Personal Access Token (PAT) de GitHub en el cuadro de texto.");
-                return;
-            }
-
-            const pBarContainer = document.getElementById('loadProgressContainer');
-            const pBar = document.getElementById('loadProgressBar');
-            const statusText = document.getElementById('loadStatusText');
- 
-            pBarContainer.style.display = 'block';
-            pBar.style.width = '10%';
-            statusText.innerText = 'Validando nombres de archivos...';
-
+        function procesarArchivosReales(files) {
             baseDatosConsolidada = [];
-            let archivosSubidosCorrectamente = 0;
-            
-            try {
-                for (let file of Array.from(files)) {
-                    // Forzar limpieza del nombre por si el sistema operativo le agrega marcas temporales
-                    let nombreLimpio = file.name.toLowerCase().trim();
-                    let esCursos = nombreLimpio.includes('curso');
-                    let esProgramas = nombreLimpio.includes('programa');
-
-                    if (!esCursos && !esProgramas) {
-                        alert(`⚠️ El archivo "${file.name}" no fue procesado. Renómbralo para que contenga la palabra "cursos" o "programas".`);
-                        continue;
+            let archivosLeidos = 0;
+ 
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    procesarFilasEstaticas(e.target.result, file.name);
+                    archivosLeidos++;
+                    if (archivosLeidos === files.length) {
+                        document.getElementById('loadProgressBar').style.width = '100%';
+                        document.getElementById('loadStatusText').innerText = '✅ Vista previa lista en navegador.';
+                        setTimeout(() => {
+                            evaluarEstadoDashboard();
+                            construirFiltrosDropdownBase();
+                            aplicarFiltrosDropdown();
+                        }, 400);
                     }
-
-                    let destinoFinal = esCursos ? 'cursos.csv' : 'programas.csv';
-                    const text = await file.text();
-                    
-                    procesarFilasCSV(text, destinoFinal);
-                    
-                    pBar.style.width = '40%';
-                    statusText.innerText = `Subiendo de forma remota "${destinoFinal}" a GitHub...`;
-
-                    // Obtener SHA actual de la API para habilitar sobreescritura
-                    let sha = '';
-                    const fileUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${destinoFinal}?ref=${GITHUB_BRANCH}`;
-                    
-                    const checkRes = await fetch(fileUrl, {
-                        headers: { 'Authorization': `token ${githubToken}` }
-                    });
-                    if (checkRes.ok) {
-                        const fileData = await checkRes.json();
-                        sha = fileData.sha;
-                    }
-
-                    // Enviar binario convertido a Base64 respetando caracteres UTF-8
-                    const putPayload = {
-                        message: `Actualización automatizada de reporte corporativo: ${destinoFinal}`,
-                        content: btoa(unescape(encodeURIComponent(text))),
-                        branch: GITHUB_BRANCH
-                    };
-                    if (sha) putPayload.sha = sha;
-
-                    const uploadRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${destinoFinal}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${githubToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(putPayload)
-                    });
-
-                    if (uploadRes.ok) {
-                        archivosSubidosCorrectamente++;
-                    } else {
-                        throw new Error(`Error en los permisos del Token para el archivo ${destinoFinal}`);
-                    }
-                }
-
-                if(archivosSubidosCorrectamente > 0) {
-                    pBar.style.width = '100%';
-                    statusText.innerText = `✅ ¡Éxito! Se actualizaron los reportes en GitHub de manera remota.`;
-                    
-                    setTimeout(() => {
-                        evaluarEstadoDashboard();
-                        construirFiltrosDropdownBase();
-                        aplicarFiltrosDropdown();
-                    }, 600);
-                }
-
-            } catch (error) {
-                console.error(error);
-                pBar.style.width = '0%';
-                statusText.innerText = '❌ Error de sincronización.';
-                alert(`Error crítico al conectar con GitHub: ${error.message}. Revisa que tu token clásico de GitHub no haya expirado y posea permisos de "repo".`);
-            }
+                };
+                reader.readAsText(file, 'UTF-8');
+            });
         }
  
-        // CARGA COMPONENTE DE CONSULTA
-        async function cargarDesdeGitHub() {
+        async function cargarDesdeServidor() {
             const archivosACargar = ['cursos.csv', 'programas.csv'];
             try {
                 baseDatosConsolidada = [];
@@ -491,31 +437,25 @@
                     const response = await fetch(`./${nombreArchivo}`);
                     if (response.ok) {
                         const csvText = await response.text();
-                        procesarFilasCSV(csvText, nombreArchivo);
+                        procesarFilasEstaticas(csvText, nombreArchivo);
                         cargoAlMenosUno = true;
                     }
                 }
                 if (cargoAlMenosUno) {
-                    finalizarCarga();
+                    evaluarEstadoDashboard();
+                    construirFiltrosDropdownBase();
+                    aplicarFiltrosDropdown();
                 }
             } catch (error) {
-                console.error("Error en la carga estática inicial:", error);
+                console.error("Error cargando los archivos remotos:", error);
             }
-        }
- 
-        function finalizarCarga() {
-            setTimeout(() => {
-                evaluarEstadoDashboard();
-                construirFiltrosDropdownBase();
-                aplicarFiltrosDropdown();
-            }, 400);
         }
  
         function parsearPorcentajeBilingue(txt, estatusTxt) {
             if (!txt) {
                 if (estatusTxt) {
                     let e = estatusTxt.toLowerCase();
-                    if (e.includes('completado') || e.includes('complete') || e.includes('rpl') || e.includes('finalizado')) return 100;
+                    if (e.includes('completado') || e.includes('complete') || e.includes('rpl') || e.includes('finalizado') || e.includes('terminado')) return 100;
                 }
                 return 0;
             }
@@ -524,7 +464,7 @@
                 let match = t.match(/\d+/); return match ? parseInt(match[0], 10) : 0;
             }
             let numMatch = t.match(/\d+/); if (numMatch) return parseInt(numMatch[0], 10);
-            if (t.includes('completado') || t.includes('complete') || t.includes('rpl') || t.includes('finalizado')) return 100;
+            if (t.includes('completado') || t.includes('complete') || t.includes('rpl') || t.includes('finalizado') || t.includes('terminado')) return 100;
             return 0;
         }
  
@@ -596,7 +536,7 @@
  
         function limpiarTextoGeografico(texto) {
             if (!texto) return '';
-            return text = texto.replace(/,?\s*\bmexico\b/gi, '')
+            return texto.replace(/,?\s*\bmexico\b/gi, '')
                         .replace(/_?MX_?/gi, '')
                         .trim();
         }
@@ -619,7 +559,6 @@
                        (tiendas.length === 0 || tiendas.includes(x.tienda)) &&
                        (estatuses.length === 0 || estatuses.includes(x.estatus));
             });
- 
             renderizarDashboard(filtrados, regiones, distritos);
         }
  
@@ -637,7 +576,6 @@
             document.getElementById('kpiPersonas').innerText = personas.toLocaleString();
             document.getElementById('kpiPorcentaje').innerText = `${promedioAvanceReal}%`;
             document.getElementById('kpiEstatusMix').innerHTML = `🟢 Finalizados: ${finalizados.toLocaleString()}<br>🟡 En Curso: ${enCurso.toLocaleString()}<br>🔴 No Iniciados: ${noIniciados.toLocaleString()}`;
- 
             document.getElementById('rowCount').innerText = `${datos.length.toLocaleString()} registros`;
  
             const tbody = document.getElementById('tablaDetalle');
@@ -665,19 +603,18 @@
                     `;
                 });
             }
- 
             calcularRankingsMultinivel(datos, regionesFiltro, distritosFiltro);
         }
  
         function calcularRankingsMultinivel(datosFiltrados, regionesFiltro, distritosFiltro) {
-            let nivelAgrupacion = 'region'; 
+            let nivelAgrupacion = 'region';
             let textoEtiqueta = 'Análisis General por Regiones';
  
             if (distritosFiltro.length > 0) {
-                nivelAgrupacion = 'tienda';   
+                nivelAgrupacion = 'tienda';
                 textoEtiqueta = 'Filtro Activo: Vista por Tiendas';
             } else if (regionesFiltro.length > 0) {
-                nivelAgrupacion = 'distrito'; 
+                nivelAgrupacion = 'distrito';
                 textoEtiqueta = 'Filtro Activo: Vista por Distritos';
             }
  
@@ -747,9 +684,9 @@
             actualizarFiltroCursosDropdown();
             aplicarFiltrosDropdown();
         }
-        
+
         evaluarEstadoDashboard();
-        document.addEventListener("DOMContentLoaded", cargarDesdeGitHub);
+        document.addEventListener("DOMContentLoaded", cargarDesdeServidor);
 </script>
 </body>
 </html>
